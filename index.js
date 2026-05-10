@@ -1,19 +1,17 @@
 const express = require('express')
 const cors = require('cors')
+const path = require('path')
 
 const app = express()
 
 app.use(express.json())
 app.use(cors())
+app.use(express.static('dist'))
 
 let notes = [
   { id: 1, content: 'HTML is easy', important: true },
   { id: 2, content: 'CSS is fun', important: false },
 ]
-
-app.get('/', (request, response) => {
-  response.send('<h1>Welcome to Notes API</h1><p>Use /api/notes to see notes</p>')
-})
 
 app.get('/api/notes', (request, response) => {
   response.json(notes)
@@ -29,10 +27,9 @@ app.post('/api/notes', (request, response) => {
   response.json(note)
 })
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).json({ error: 'Endpoint not found' })
-}
-app.use(unknownEndpoint)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+})
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {
